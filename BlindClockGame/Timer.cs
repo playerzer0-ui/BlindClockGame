@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using NodeTesting.models;
 using System;
 using System.Threading;
+using System.Timers;
 
 namespace BlindClockGame
 {
@@ -36,6 +37,7 @@ namespace BlindClockGame
 
         public void Randomize()
         {
+            Reset();
             TargetTime = rand.Next(20, 61);
             timeText.Text = TimeSpan.FromSeconds(TargetTime).ToString(@"mm\:ss\:ff");
             targetText.Text = "Target Time: " + TimeSpan.FromSeconds(TargetTime).ToString(@"mm\:ss\:ff");

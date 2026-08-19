@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NodeTesting.models;
+using System;
 
 namespace BlindClockGame
 {
@@ -10,6 +11,12 @@ namespace BlindClockGame
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private int bgState = 2;
+        private float opacity = 0f;
+        private CollisionRect blackout;
+
+        private float fadeTimer = 3f;
+        private float fadeTimerMax = 3f;
+        private Random rand;
 
         private MouseState previousMouseState;
         Canvas canvas;
@@ -44,6 +51,11 @@ namespace BlindClockGame
             canvas = new Canvas(_graphics.GraphicsDevice, Window, 1280, 720);
             button = new Button();
             timer = new Timer();
+            blackout = new CollisionRect(640, 360, 1280, 720);
+            rand = new Random();
+
+            fadeTimerMax = (float)rand.NextDouble() * 3 + 2; // Random value between 2 and 5
+            fadeTimer = fadeTimerMax;
 
             button.SetText("START");
             timer.Randomize();
@@ -51,12 +63,9 @@ namespace BlindClockGame
 
         protected override void Update(GameTime gameTime)
         {
-            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            Vector2 viewportCenter = new Vector2(
-            Globals.graphics.GraphicsDevice.Viewport.Width / 2f,
-            Globals.graphics.GraphicsDevice.Viewport.Height / 2f);
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // TODO: Add your update logic here
             MouseState currentMouseState = Mouse.GetState();
@@ -83,6 +92,9 @@ namespace BlindClockGame
                         case 2:
                             Globals.state = 0;
                             bgState = 2;
+                            opacity = 0f;
+                            fadeTimerMax = (float)rand.NextDouble() * 3 + 2; // Random value between 2 and 5
+                            fadeTimer = fadeTimerMax;
                             timer.Randomize();
                             button.SetText("START");
                             break;
@@ -93,7 +105,15 @@ namespace BlindClockGame
             if(Globals.state == 1)
             {
                 timer.Update(gameTime);
+                if(opacity <= 1f)
+                {
+                    fadeTimer -= deltaTime;
+                    if(fadeTimer < 0) {
+                        opacity += 0.05f;
+                    }
+                }
             }
+
 
             previousMouseState = currentMouseState;
             base.Update(gameTime);
@@ -121,7 +141,7 @@ namespace BlindClockGame
             timer.Draw();
             if(Globals.state == 1)
             {
-                GraphicsDevice.Clear(PicoPallete.black);
+                blackout.Draw(new Color(0, 0, 0, opacity));
             }
             button.Draw();
             _spriteBatch.End();
