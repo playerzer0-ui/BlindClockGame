@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using NodeTesting.models;
 using System;
 
@@ -15,13 +17,19 @@ namespace BlindClockGame
         private CollisionRect blackout;
 
         private float fadeTimer = 3f;
+        private float musicTimer = 3f;
         private float fadeTimerMax = 3f;
         private Random rand;
+        private bool isWaitingToFade = false;
+        private bool isFadingOut = false;
+        private float fadeOutSpeed = 0.5f;
 
         private MouseState previousMouseState;
         Canvas canvas;
         Button button;
         Timer timer;
+        Song ticking;
+        SoundEffect click;
 
         public Game1()
         {
@@ -53,9 +61,12 @@ namespace BlindClockGame
             timer = new Timer();
             blackout = new CollisionRect(640, 360, 1280, 720);
             rand = new Random();
+            ticking = Content.Load<Song>("ticking-timer");
+            click = Content.Load<SoundEffect>("mouse-click");
 
             fadeTimerMax = (float)rand.NextDouble() * 3 + 2; // Random value between 2 and 5
             fadeTimer = fadeTimerMax;
+            musicTimer = fadeTimerMax;
 
             button.SetText("START");
             timer.Randomize();
@@ -78,15 +89,20 @@ namespace BlindClockGame
 
                 if (button.Hitbox.Contains(clickPoint)) 
                 {
+                    click.Play();
                     switch (Globals.state)
                     {
                         case 0:
                             Globals.state = 1;
+                            MediaPlayer.Play(ticking);
+                            isWaitingToFade = true;
+                            
                             button.SetText("STOP");
                             break;
                         case 1:
                             Globals.state = 2;
                             bgState = timer.CheckTime();
+                            MediaPlayer.Stop();
                             button.SetText("RESET");
                             break;
                         case 2:
@@ -95,6 +111,9 @@ namespace BlindClockGame
                             opacity = 0f;
                             fadeTimerMax = (float)rand.NextDouble() * 3 + 2; // Random value between 2 and 5
                             fadeTimer = fadeTimerMax;
+                            musicTimer = fadeTimerMax;
+                            MediaPlayer.Volume = 1f;
+
                             timer.Randomize();
                             button.SetText("START");
                             break;
@@ -110,6 +129,28 @@ namespace BlindClockGame
                     fadeTimer -= deltaTime;
                     if(fadeTimer < 0) {
                         opacity += 0.05f;
+                    }
+                }
+
+                if (isWaitingToFade)
+                {
+                    musicTimer -= deltaTime;
+                    if (musicTimer < 0)
+                    {
+                        isFadingOut = true;
+                        isWaitingToFade = false;
+                    }
+                }
+
+                if (isFadingOut)
+                {
+                    MediaPlayer.Volume -= fadeOutSpeed * deltaTime;
+
+                    if (MediaPlayer.Volume <= 0f)
+                    {
+                        MediaPlayer.Volume = 0f;
+                        MediaPlayer.Stop();
+                        isFadingOut = false;
                     }
                 }
             }

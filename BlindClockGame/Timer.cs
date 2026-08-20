@@ -76,8 +76,8 @@ namespace BlindClockGame
             {
                 targetText.Draw(640, 100, PicoPallete.red);
             }
-            Globals.spriteBatch.DrawString(font, "current: " + currentTime, new Vector2(600, 100), PicoPallete.black);
-            Globals.spriteBatch.DrawString(font, "target: " + targetTime, new Vector2(600, 120), PicoPallete.black);
+            //Globals.spriteBatch.DrawString(font, "current: " + currentTime, new Vector2(600, 100), PicoPallete.black);
+            //Globals.spriteBatch.DrawString(font, "target: " + targetTime, new Vector2(600, 120), PicoPallete.black);
             TimeText.Draw(640, 240, PicoPallete.black);
         }
 

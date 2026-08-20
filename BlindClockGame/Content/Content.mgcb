@@ -20,6 +20,18 @@
 /processorParam:TextureFormat=Compressed
 /build:File.spritefont
 
+#begin mouse-click.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:mouse-click.mp3
+
+#begin ticking-timer.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:ticking-timer.mp3
+
 #begin TimeText.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
