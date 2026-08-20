@@ -139,7 +139,7 @@ namespace BlindClockGame
                     break;
             }
             timer.Draw();
-            if(Globals.state == 1)
+            if (Globals.state == 1)
             {
                 blackout.Draw(new Color(0, 0, 0, opacity));
             }

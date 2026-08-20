@@ -38,18 +38,19 @@ namespace BlindClockGame
         public void Randomize()
         {
             Reset();
-            TargetTime = rand.Next(20, 61);
-            timeText.Text = TimeSpan.FromSeconds(TargetTime).ToString(@"mm\:ss\:ff");
-            targetText.Text = "Target Time: " + TimeSpan.FromSeconds(TargetTime).ToString(@"mm\:ss\:ff");
+            TargetTime = rand.Next(5, 15) * 1000;
+            timeText.Text = TimeSpan.FromMilliseconds(TargetTime).ToString(@"mm\:ss\:ff");
+            targetText.Text = "Target Time: " + TimeSpan.FromMilliseconds(TargetTime).ToString(@"mm\:ss\:ff");
         }
 
         public int CheckTime()
         {
-            if (currentTime == TargetTime * 1000) //just right
+            currentTime = (float)Math.Floor(currentTime);
+            if (currentTime == TargetTime) //just right
             {
                 return 1;
             }
-            else if (currentTime > TargetTime * 1000) //too late
+            else if (currentTime > TargetTime) //too late
             {
                 return -1;
             }
@@ -58,12 +59,14 @@ namespace BlindClockGame
                 return 0;
             }
         }
-        
+
 
         public void Update(GameTime gameTime) 
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+
             currentTime += deltaTime;
+
             TimeText.Text = TimeSpan.FromMilliseconds(currentTime).ToString(@"mm\:ss\:ff");
         }
 
@@ -73,6 +76,8 @@ namespace BlindClockGame
             {
                 targetText.Draw(640, 100, PicoPallete.red);
             }
+            Globals.spriteBatch.DrawString(font, "current: " + currentTime, new Vector2(600, 100), PicoPallete.black);
+            Globals.spriteBatch.DrawString(font, "target: " + targetTime, new Vector2(600, 120), PicoPallete.black);
             TimeText.Draw(640, 240, PicoPallete.black);
         }
 
